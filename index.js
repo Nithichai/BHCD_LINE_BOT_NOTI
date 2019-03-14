@@ -41,7 +41,6 @@ app.post('/device-online', (req, res) => {
       "text": response.data.data.esp + " online"
     }
     client.pushMessage(lineID, echo)
-    res.end()
   }).catch((error) => {
     console.log(error.message)
   })
@@ -93,7 +92,6 @@ app.post('/falling', (req, res) => {
       }
     }
     client.pushMessage(lineID, echo)
-    res.end()
   }).catch((error) => {
     console.log(error.message)
   })
@@ -145,7 +143,31 @@ app.post('/help', (req, res) => {
       }
     }
     client.pushMessage(lineID, echo)
-    res.end()
+  }).catch((error) => {
+    console.log(error.message)
+  })
+})
+
+app.post('/help-ack', (req, res) => {
+  var esp = req.body.data.esp
+  axios({
+    method: 'post',
+    url: 'https://bhcd-api.herokuapp.com/user-line-device-info/check/esp',
+    headers: {
+      'Content-Type' : 'application/json'
+    },
+    data: {
+        "data" : {
+          "esp" : esp
+        }
+    }
+  }).then((response) => {
+    var lineID = response.data.data.id
+    const echo = {
+      "type": "text",
+      "text": "มีผู้กดปุ่มกดอุปกรณ์ ของคุณ " + response.data.data.name + " เพื่อให้ความช่วยเหลือแล้ว"
+    }
+    client.pushMessage(lineID, echo)
   }).catch((error) => {
     console.log(error.message)
   })
