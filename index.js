@@ -143,8 +143,10 @@ app.post('/help', (req, res) => {
       }
     }
     client.pushMessage(lineID, echo)
+    res.status(200)
   }).catch((error) => {
     console.log(error.message)
+    res.status(400)
   })
 })
 
@@ -168,8 +170,10 @@ app.post('/help-ack', (req, res) => {
       "text": "มีผู้กดปุ่มกดอุปกรณ์ ของคุณ " + response.data.data.name + " เพื่อให้ความช่วยเหลือแล้ว"
     }
     client.pushMessage(lineID, echo)
+    res.status(200)
   }).catch((error) => {
     console.log(error.message)
+    res.status(400)
   })
 })
 
