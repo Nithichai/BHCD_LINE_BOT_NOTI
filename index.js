@@ -41,8 +41,10 @@ app.post('/device-online', (req, res) => {
       "text": response.data.data.esp + " online"
     }
     client.pushMessage(lineID, echo)
+    res.status(200)
   }).catch((error) => {
     console.log(error.message)
+    res.status(400)
   })
 })
 
@@ -92,8 +94,10 @@ app.post('/falling', (req, res) => {
       }
     }
     client.pushMessage(lineID, echo)
+    res.status(200)
   }).catch((error) => {
     console.log(error.message)
+    res.status(400)
   })
 })
 
