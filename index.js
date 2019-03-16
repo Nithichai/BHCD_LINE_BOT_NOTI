@@ -42,9 +42,11 @@ app.post('/device-online', (req, res) => {
     }
     client.pushMessage(lineID, echo)
     res.status(200)
+    res.send('Push message completed')
   }).catch((error) => {
     console.log(error.message)
     res.status(400)
+    res.send('Push message error')
   })
 })
 
