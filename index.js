@@ -160,6 +160,35 @@ app.post('/help', (req, res) => {
   })
 })
 
+app.post('/help-pre-ack', (req, res) => {
+  var esp = req.body.data.esp
+  axios({
+    method: 'post',
+    url: 'https://bhcd-api.herokuapp.com/user-line-device-info/check/esp',
+    headers: {
+      'Content-Type' : 'application/json'
+    },
+    data: {
+        "data" : {
+          "esp" : esp
+        }
+    }
+  }).then((response) => {
+    var lineID = response.data.data.id
+    const echo = {
+      "type": "text",
+      "text": "การตอบรับได้ถึงอุปกรณ์ของคุณ " + response.data.data.name + " แล้ว"
+    }
+    client.pushMessage(lineID, echo)
+    res.status(200)
+    res.send('Push message completed')
+  }).catch((error) => {
+    console.log(error.message)
+    res.status(400)
+    res.send('Push message error')
+  })
+})
+
 app.post('/help-ack', (req, res) => {
   var esp = req.body.data.esp
   axios({
