@@ -35,12 +35,15 @@ app.post('/device-online', (req, res) => {
         }
     }
   }).then((response) => {
-    var lineID = response.data.data.id
-    const echo = {
-      "type": "text",
-      "text": response.data.data.esp + " online"
+    for (var i = 0; i < response.data.data.length; i++) {
+      var lineID = response.data.data[i].id
+      var lineESP = response.data.data[i].esp
+      const echo = {
+        "type": "text",
+        "text": lineESP + " online"
+      }
+      client.pushMessage(lineID, echo)
     }
-    client.pushMessage(lineID, echo)
     res.status(200)
     res.send('Push message completed')
   }).catch((error) => {
@@ -64,38 +67,46 @@ app.post('/falling', (req, res) => {
         }
     }
   }).then((response) => {
-    var lineID = response.data.data.id
-    const echo = {
-      "type": "template",
-      "altText": "คุณ " + response.data.data.name,
-      "template": {
-          "type": "buttons",
-          "thumbnailImageUrl": "https://i.imgur.com/h3ujqrZ.jpg",
-          "imageAspectRatio": "square",
-          "imageSize": "cover",
-          "imageBackgroundColor": "#FFFFFF",
-          "title": "หมายเลขอุปกรณ์ : " + esp,
-          "text": "คุณ " + response.data.data.name,
-          "defaultAction": {
-              "type": "message",
-              "label": "ตอบรับ",
-              "text": "Acknowledge:" + esp
-          },
-          "actions": [
-              {
+    for (var i = 0; i < response.data.data.length; i++) {
+      var lineID = response.data.data[i].id
+      var lineName = response.data.data[i].name
+      var linePhone = response.data.data[i].phone
+
+      if (response.data.data[i].esp == null) {
+        lineESP = response.data.data[i].esp
+      }
+      const echo = {
+        "type": "template",
+        "altText": "คุณ " + lineName,
+        "template": {
+            "type": "buttons",
+            "thumbnailImageUrl": "https://i.imgur.com/h3ujqrZ.jpg",
+            "imageAspectRatio": "square",
+            "imageSize": "cover",
+            "imageBackgroundColor": "#FFFFFF",
+            "title": "หมายเลขอุปกรณ์ : " + esp,
+            "text": "คุณ " + lineName,
+            "defaultAction": {
                 "type": "message",
                 "label": "ตอบรับ",
                 "text": "Acknowledge:" + esp
-              },
-              {
-                "type": "uri",
-                "label": "โทร",
-                "uri": "tel:" + response.data.data.phone
-              }
-          ]
+            },
+            "actions": [
+                {
+                  "type": "message",
+                  "label": "ตอบรับ",
+                  "text": "Acknowledge:" + esp
+                },
+                {
+                  "type": "uri",
+                  "label": "โทร",
+                  "uri": "tel:" + linePhone
+                }
+            ]
+        }
       }
+      client.pushMessage(lineID, echo)
     }
-    client.pushMessage(lineID, echo)
     res.status(200)
     res.send('Push message completed')
   }).catch((error) => {
