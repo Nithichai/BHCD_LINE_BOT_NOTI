@@ -332,7 +332,7 @@ app.post('/low-batt', (req, res) => {
       var lineESP = response.data.data[i].esp
       const echo = {
         "type": "text",
-        "text": "แบตเตอรี่ของตุณ " + lineName + "(" + lineESP + ") กำลังจะหมดลง\nโปรดชาร์จแบตเตอรี่ของท่าน(" + batt + "%)"
+        "text": "แบตเตอรี่ของคุณ " + lineName + "(" + lineESP + ") กำลังจะหมดลง\nโปรดชาร์จแบตเตอรี่ของท่าน(" + batt + "%)"
       }
       client.pushMessage(lineID, echo)
     }
