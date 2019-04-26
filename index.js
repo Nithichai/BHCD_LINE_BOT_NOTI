@@ -35,17 +35,34 @@ app.post('/device-online', (req, res) => {
         }
     }
   }).then((response) => {
+    var id_list = []
+    var esp_list = []
     for (var i = 0; i < response.data.data.length; i++) {
-      var lineID = response.data.data[i].id
-      var lineESP = response.data.data[i].esp
-      const echo = {
-        "type": "text",
-        "text": lineESP + " online"
-      }
-      client.pushMessage(lineID, echo)
+      id_list.push(response.data.data[i].id)
+      esp_list.push(response.data.data[i].esp)
     }
-    res.status(200)
-    res.send('Push message completed')
+    axios({
+      method: 'post',
+      url: 'https://api.line.me/v2/bot/message/multicast',
+      headers: {
+        'Content-Type' : 'application/json',
+        'Authorization' : 'Bearer ' + process.env.CHANNEL_ACCESS_TOKEN 
+      },
+      data: {
+        'to' : id_list,
+        'messages' : [{
+          "type": "text",
+          "text": lineESP + " online"
+        }]
+      }
+    }).then((response2) => {
+      res.status(200)
+      res.send('Push message completed')
+    }).catch((error2) => {
+      console.log(error2.message)
+      res.status(400)
+      res.send('Push message error')
+    })
   }).catch((error) => {
     console.log(error.message)
     res.status(400)
@@ -71,10 +88,6 @@ app.post('/falling', (req, res) => {
       var lineID = response.data.data[i].id
       var lineName = response.data.data[i].name
       var linePhone = response.data.data[i].phone
-
-      if (response.data.data[i].esp == null) {
-        lineESP = response.data.data[i].esp
-      }
       const echo = {
         "type": "template",
         "altText": "คุณ " + lineName,
@@ -130,38 +143,42 @@ app.post('/help', (req, res) => {
         }
     }
   }).then((response) => {
-    var lineID = response.data.data.id
-    const echo = {
-      "type": "template",
-      "altText": "คุณ " + response.data.data.name,
-      "template": {
-          "type": "buttons",
-          "thumbnailImageUrl": "https://i.imgur.com/oWiGMzD.jpg",
-          "imageAspectRatio": "square",
-          "imageSize": "cover",
-          "imageBackgroundColor": "#FFFFFF",
-          "title": "หมายเลขอุปกรณ์ : " + esp,
-          "text": "คุณ " + response.data.data.name,
-          "defaultAction": {
-              "type": "message",
-              "label": "ตอบรับ",
-              "text": "Acknowledge:" + esp
-          },
-          "actions": [
-              {
+    for (var i = 0; i < response.data.data.length; i++) {
+      var lineID = response.data.data[i].id
+      var lineName = response.data.data[i].name
+      var linePhone = response.data.data[i].phone
+      const echo = {
+        "type": "template",
+        "altText": "คุณ " + lineName,
+        "template": {
+            "type": "buttons",
+            "thumbnailImageUrl": "https://i.imgur.com/oWiGMzD.jpg",
+            "imageAspectRatio": "square",
+            "imageSize": "cover",
+            "imageBackgroundColor": "#FFFFFF",
+            "title": "หมายเลขอุปกรณ์ : " + esp,
+            "text": "คุณ " + lineName,
+            "defaultAction": {
                 "type": "message",
                 "label": "ตอบรับ",
                 "text": "Acknowledge:" + esp
-              },
-              {
-                "type": "uri",
-                "label": "โทร",
-                "uri": "tel:" + response.data.data.phone
-              }
-          ]
+            },
+            "actions": [
+                {
+                  "type": "message",
+                  "label": "ตอบรับ",
+                  "text": "Acknowledge:" + esp
+                },
+                {
+                  "type": "uri",
+                  "label": "โทร",
+                  "uri": "tel:" + linePhone
+                }
+            ]
+        }
       }
+      client.pushMessage(lineID, echo)
     }
-    client.pushMessage(lineID, echo)
     res.status(200)
     res.send('Push message completed')
   }).catch((error) => {
@@ -185,12 +202,15 @@ app.post('/help-pre-ack', (req, res) => {
         }
     }
   }).then((response) => {
-    var lineID = response.data.data.id
-    const echo = {
-      "type": "text",
-      "text": "การตอบรับได้ถึงอุปกรณ์ของคุณ " + response.data.data.name + " แล้ว"
+    for (var i = 0; i < response.data.data.length; i++) {
+      var lineID = response.data.data[i].id
+      var lineName = response.data.data[i].name
+      const echo = {
+        "type": "text",
+        "text": "การตอบรับได้ถึงอุปกรณ์ของคุณ " + lineName + " แล้ว"
+      }
+      client.pushMessage(lineID, echo)
     }
-    client.pushMessage(lineID, echo)
     res.status(200)
     res.send('Push message completed')
   }).catch((error) => {
@@ -214,10 +234,47 @@ app.post('/help-ack', (req, res) => {
         }
     }
   }).then((response) => {
+    for (var i = 0; i < response.data.data.length; i++) {
+      var lineID = response.data.data[i].id
+      var lineName = response.data.data[i].name
+      const echo = {
+        "type": "text",
+        "text": "มีผู้กดปุ่มกดอุปกรณ์ ของคุณ " + lineName + " เพื่อให้ความช่วยเหลือแล้ว"
+      }
+      client.pushMessage(lineID, echo)
+    }
+    res.status(200)
+    res.send('Push message completed')
+  }).catch((error) => {
+    console.log(error.message)
+    res.status(400)
+    res.send('Push message error')
+  })
+})
+
+app.post('/health-info', (req, res) => {
+  var esp = req.body.data.esp
+  var hbp = req.body.data.hbp
+  var lbp = req.body.data.lbp
+  var hr = req.body.data.hr
+  axios({
+    method: 'post',
+    url: 'https://bhcd-api.herokuapp.com/user-line-device-info/check/esp',
+    headers: {
+      'Content-Type' : 'application/json'
+    },
+    data: {
+        "data" : {
+          "esp" : esp
+        }
+    }
+  }).then((response) => {
     var lineID = response.data.data.id
     const echo = {
       "type": "text",
-      "text": "มีผู้กดปุ่มกดอุปกรณ์ ของคุณ " + response.data.data.name + " เพื่อให้ความช่วยเหลือแล้ว"
+      "text": "ข้อมูลสุขภาพของคุณ " + response.data.data.name + " ได้รับการบันทึกแล้ว\n" + 
+        "ความดันโลหิต : " + hbp.toString() + "/" + lbp.toString() + "\n" +
+        "อัตรการเต้นของหัวใจ : " + hr.toString()
     }
     client.pushMessage(lineID, echo)
     res.status(200)
