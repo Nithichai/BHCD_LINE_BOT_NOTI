@@ -327,7 +327,7 @@ app.post('/low-batt', (req, res) => {
       var lineName = response.data.data[i].name
       const echo = {
         "type": "text",
-        "text": "แบตเตอรี่ของตุณ " + lineName + "(" + lineID + ") กำลังจะหมดลง\nโปรดชาร์จแบตเตอรี่ของท่าน"
+        "text": "แบตเตอรี่ของตุณ " + lineName + "(" + lineID + ") กำลังจะหมดลง\nโปรดชาร์จแบตเตอรี่ของท่าน(" + batt + "%)"
       }
       client.pushMessage(lineID, echo)
     }
