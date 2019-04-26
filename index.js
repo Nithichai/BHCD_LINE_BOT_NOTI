@@ -35,34 +35,18 @@ app.post('/device-online', (req, res) => {
         }
     }
   }).then((response) => {
-    var id_list = []
-    var esp_list = []
     for (var i = 0; i < response.data.data.length; i++) {
-      id_list.push(response.data.data[i].id)
-      esp_list.push(response.data.data[i].esp)
-    }
-    axios({
-      method: 'post',
-      url: 'https://api.line.me/v2/bot/message/multicast',
-      headers: {
-        'Content-Type' : 'application/json',
-        'Authorization' : 'Bearer ' + process.env.CHANNEL_ACCESS_TOKEN 
-      },
-      data: {
-        'to' : id_list,
-        'messages' : [{
-          "type": "text",
-          "text": lineESP + " online"
-        }]
+      var lineID = response.data.data[i].id
+      var lineESP = response.data.data[i].esp
+      var lineName = response.data.data[i].name
+      const echo = {
+        "type": "text",
+        "text": "คุณ " + lineName + "(" + lineESP + ") online"
       }
-    }).then((response2) => {
-      res.status(200)
-      res.send('Push message completed')
-    }).catch((error2) => {
-      console.log(error2.message)
-      res.status(400)
-      res.send('Push message error')
-    })
+      client.pushMessage(lineID, echo)
+    }
+    res.status(200)
+    res.send('Push message completed')
   }).catch((error) => {
     console.log(error.message)
     res.status(400)
