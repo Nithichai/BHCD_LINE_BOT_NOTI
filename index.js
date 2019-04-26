@@ -304,6 +304,37 @@ app.post('/health-info', (req, res) => {
   })
 })
 
+app.post('/health-info-oxi', (req, res) => {
+  var esp = req.body.data.esp
+  var spo2 = req.body.data.spo2
+  axios({
+    method: 'post',
+    url: 'https://bhcd-api.herokuapp.com/user-line-device-info/check/esp',
+    headers: {
+      'Content-Type' : 'application/json'
+    },
+    data: {
+        "data" : {
+          "esp" : esp
+        }
+    }
+  }).then((response) => {
+    var lineID = response.data.data.id
+    const echo = {
+      "type": "text",
+      "text": "ข้อมูลสุขภาพของคุณ " + response.data.data.name + " ได้รับการบันทึกแล้ว\n" + 
+        "ค่าประมาณของปริมาณออกซิเจนในเลือด : " + hbp.toString()
+    }
+    client.pushMessage(lineID, echo)
+    res.status(200)
+    res.send('Push message completed')
+  }).catch((error) => {
+    console.log(error.message)
+    res.status(400)
+    res.send('Push message error')
+  })
+})
+
 // listen on port
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
