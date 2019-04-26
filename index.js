@@ -191,7 +191,7 @@ app.post('/help-pre-ack', (req, res) => {
       var lineName = response.data.data[i].name
       const echo = {
         "type": "text",
-        "text": "การตอบรับได้ถึงอุปกรณ์ของคุณ " + lineName + " แล้ว"
+        "text": "การตอบรับได้ถึงอุปกรณ์ของคุณ " + lineName + "(" + lineID + ") แล้ว"
       }
       client.pushMessage(lineID, echo)
     }
@@ -223,7 +223,7 @@ app.post('/help-ack', (req, res) => {
       var lineName = response.data.data[i].name
       const echo = {
         "type": "text",
-        "text": "มีผู้กดปุ่มกดอุปกรณ์ ของคุณ " + lineName + " เพื่อให้ความช่วยเหลือแล้ว"
+        "text": "มีผู้กดปุ่มกดอุปกรณ์ ของคุณ " + lineName + "(" + lineID + ") เพื่อให้ความช่วยเหลือแล้ว"
       }
       client.pushMessage(lineID, echo)
     }
@@ -258,7 +258,7 @@ app.post('/health-info', (req, res) => {
       var lineName = response.data.data[i].name
       const echo = {
         "type": "text",
-        "text": "ข้อมูลสุขภาพของคุณ " + lineName + " ได้รับการบันทึกแล้ว\n" + 
+        "text": "ข้อมูลสุขภาพของคุณ " + lineName + "(" + lineID + ") ได้รับการบันทึกแล้ว\n" + 
           "ความดันโลหิต : " + hbp.toString() + "/" + lbp.toString() + "\n" +
           "อัตรการเต้นของหัวใจ : " + hr.toString()
       }
@@ -293,8 +293,41 @@ app.post('/health-info-oxi', (req, res) => {
       var lineName = response.data.data[i].name
       const echo = {
         "type": "text",
-        "text": "ข้อมูลสุขภาพของคุณ " + lineName + " ได้รับการบันทึกแล้ว\n" + 
+        "text": "ข้อมูลสุขภาพของคุณ " + lineName + "(" + lineID + ") ได้รับการบันทึกแล้ว\n" + 
           "ค่าประมาณของปริมาณออกซิเจนในเลือด : " + spo2.toString()
+      }
+      client.pushMessage(lineID, echo)
+    }
+    res.status(200)
+    res.send('Pushing message ...')
+  }).catch((error) => {
+    console.log(error.message)
+    res.status(400)
+    res.send('Push message error')
+  })
+})
+
+app.post('/low-batt', (req, res) => {
+  var esp = req.body.data.esp
+  var batt = req.body.data.batt
+  axios({
+    method: 'post',
+    url: 'https://bhcd-api.herokuapp.com/user-line-device-info/check/esp',
+    headers: {
+      'Content-Type' : 'application/json'
+    },
+    data: {
+        "data" : {
+          "esp" : esp
+        }
+    }
+  }).then((response) => {
+    for (var i = 0; i < response.data.data.length; i++) {
+      var lineID = response.data.data[i].id
+      var lineName = response.data.data[i].name
+      const echo = {
+        "type": "text",
+        "text": "แบตเตอรี่ของตุณ " + lineName + "(" + lineID + ") กำลังจะหมดลง\nโปรดชาร์จแบตเตอรี่ของท่าน"
       }
       client.pushMessage(lineID, echo)
     }
