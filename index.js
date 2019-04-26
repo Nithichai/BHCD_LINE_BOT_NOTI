@@ -189,9 +189,10 @@ app.post('/help-pre-ack', (req, res) => {
     for (var i = 0; i < response.data.data.length; i++) {
       var lineID = response.data.data[i].id
       var lineName = response.data.data[i].name
+      var lineESP = response.data.data[i].esp
       const echo = {
         "type": "text",
-        "text": "การตอบรับได้ถึงอุปกรณ์ของคุณ " + lineName + "(" + lineID + ") แล้ว"
+        "text": "การตอบรับได้ถึงอุปกรณ์ของคุณ " + lineName + "(" + lineESP + ") แล้ว"
       }
       client.pushMessage(lineID, echo)
     }
@@ -221,9 +222,10 @@ app.post('/help-ack', (req, res) => {
     for (var i = 0; i < response.data.data.length; i++) {
       var lineID = response.data.data[i].id
       var lineName = response.data.data[i].name
+      var lineESP = response.data.data[i].esp
       const echo = {
         "type": "text",
-        "text": "มีผู้กดปุ่มกดอุปกรณ์ ของคุณ " + lineName + "(" + lineID + ") เพื่อให้ความช่วยเหลือแล้ว"
+        "text": "มีผู้กดปุ่มกดอุปกรณ์ ของคุณ " + lineName + "(" + lineESP + ") เพื่อให้ความช่วยเหลือแล้ว"
       }
       client.pushMessage(lineID, echo)
     }
@@ -256,9 +258,10 @@ app.post('/health-info', (req, res) => {
     for (var i = 0; i < response.data.data.length; i++) {
       var lineID = response.data.data[i].id
       var lineName = response.data.data[i].name
+      var lineESP = response.data.data[i].esp
       const echo = {
         "type": "text",
-        "text": "ข้อมูลสุขภาพของคุณ " + lineName + "(" + lineID + ") ได้รับการบันทึกแล้ว\n" + 
+        "text": "ข้อมูลสุขภาพของคุณ " + lineName + "(" + lineESP + ") ได้รับการบันทึกแล้ว\n" + 
           "ความดันโลหิต : " + hbp.toString() + "/" + lbp.toString() + "\n" +
           "อัตรการเต้นของหัวใจ : " + hr.toString()
       }
@@ -291,9 +294,10 @@ app.post('/health-info-oxi', (req, res) => {
     for (var i = 0; i < response.data.data.length; i++) {
       var lineID = response.data.data[i].id
       var lineName = response.data.data[i].name
+      var lineESP = response.data.data[i].esp
       const echo = {
         "type": "text",
-        "text": "ข้อมูลสุขภาพของคุณ " + lineName + "(" + lineID + ") ได้รับการบันทึกแล้ว\n" + 
+        "text": "ข้อมูลสุขภาพของคุณ " + lineName + "(" + lineESP + ") ได้รับการบันทึกแล้ว\n" + 
           "ค่าประมาณของปริมาณออกซิเจนในเลือด : " + spo2.toString()
       }
       client.pushMessage(lineID, echo)
@@ -325,9 +329,10 @@ app.post('/low-batt', (req, res) => {
     for (var i = 0; i < response.data.data.length; i++) {
       var lineID = response.data.data[i].id
       var lineName = response.data.data[i].name
+      var lineESP = response.data.data[i].esp
       const echo = {
         "type": "text",
-        "text": "แบตเตอรี่ของตุณ " + lineName + "(" + lineID + ") กำลังจะหมดลง\nโปรดชาร์จแบตเตอรี่ของท่าน(" + batt + "%)"
+        "text": "แบตเตอรี่ของตุณ " + lineName + "(" + lineESP + ") กำลังจะหมดลง\nโปรดชาร์จแบตเตอรี่ของท่าน(" + batt + "%)"
       }
       client.pushMessage(lineID, echo)
     }
