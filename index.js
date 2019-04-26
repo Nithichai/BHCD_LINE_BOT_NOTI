@@ -46,7 +46,7 @@ app.post('/device-online', (req, res) => {
       client.pushMessage(lineID, echo)
     }
     res.status(200)
-    res.send('Push message completed')
+    res.send('Pushing message ...')
   }).catch((error) => {
     console.log(error.message)
     res.status(400)
@@ -105,7 +105,7 @@ app.post('/falling', (req, res) => {
       client.pushMessage(lineID, echo)
     }
     res.status(200)
-    res.send('Push message completed')
+    res.send('Pushing message ...')
   }).catch((error) => {
     console.log(error.message)
     res.status(400)
@@ -164,7 +164,7 @@ app.post('/help', (req, res) => {
       client.pushMessage(lineID, echo)
     }
     res.status(200)
-    res.send('Push message completed')
+    res.send('Pushing message ...')
   }).catch((error) => {
     console.log(error.message)
     res.status(400)
@@ -196,7 +196,7 @@ app.post('/help-pre-ack', (req, res) => {
       client.pushMessage(lineID, echo)
     }
     res.status(200)
-    res.send('Push message completed')
+    res.send('Pushing message ...')
   }).catch((error) => {
     console.log(error.message)
     res.status(400)
@@ -228,7 +228,7 @@ app.post('/help-ack', (req, res) => {
       client.pushMessage(lineID, echo)
     }
     res.status(200)
-    res.send('Push message completed')
+    res.send('Pushing message ...')
   }).catch((error) => {
     console.log(error.message)
     res.status(400)
@@ -253,16 +253,19 @@ app.post('/health-info', (req, res) => {
         }
     }
   }).then((response) => {
-    var lineID = response.data.data.id
-    const echo = {
-      "type": "text",
-      "text": "ข้อมูลสุขภาพของคุณ " + response.data.data.name + " ได้รับการบันทึกแล้ว\n" + 
-        "ความดันโลหิต : " + hbp.toString() + "/" + lbp.toString() + "\n" +
-        "อัตรการเต้นของหัวใจ : " + hr.toString()
+    for (var i = 0; i < response.data.data.length; i++) {
+      var lineID = response.data.data[i].id
+      var lineName = response.data.data[i].name
+      const echo = {
+        "type": "text",
+        "text": "ข้อมูลสุขภาพของคุณ " + lineName + " ได้รับการบันทึกแล้ว\n" + 
+          "ความดันโลหิต : " + hbp.toString() + "/" + lbp.toString() + "\n" +
+          "อัตรการเต้นของหัวใจ : " + hr.toString()
+      }
+      client.pushMessage(lineID, echo)
     }
-    client.pushMessage(lineID, echo)
     res.status(200)
-    res.send('Push message completed')
+    res.send('Pushing message ...')
   }).catch((error) => {
     console.log(error.message)
     res.status(400)
@@ -285,15 +288,18 @@ app.post('/health-info-oxi', (req, res) => {
         }
     }
   }).then((response) => {
-    var lineID = response.data.data.id
-    const echo = {
-      "type": "text",
-      "text": "ข้อมูลสุขภาพของคุณ " + response.data.data.name + " ได้รับการบันทึกแล้ว\n" + 
-        "ค่าประมาณของปริมาณออกซิเจนในเลือด : " + spo2.toString()
+    for (var i = 0; i < response.data.data.length; i++) {
+      var lineID = response.data.data[i].id
+      var lineName = response.data.data[i].name
+      const echo = {
+        "type": "text",
+        "text": "ข้อมูลสุขภาพของคุณ " + lineName + " ได้รับการบันทึกแล้ว\n" + 
+          "ค่าประมาณของปริมาณออกซิเจนในเลือด : " + spo2.toString()
+      }
+      client.pushMessage(lineID, echo)
     }
-    client.pushMessage(lineID, echo)
     res.status(200)
-    res.send('Push message completed')
+    res.send('Pushing message ...')
   }).catch((error) => {
     console.log(error.message)
     res.status(400)
