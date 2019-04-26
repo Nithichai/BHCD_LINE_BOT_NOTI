@@ -270,40 +270,6 @@ app.post('/health-info', (req, res) => {
   })
 })
 
-app.post('/health-info', (req, res) => {
-  var esp = req.body.data.esp
-  var hbp = req.body.data.hbp
-  var lbp = req.body.data.lbp
-  var hr = req.body.data.hr
-  axios({
-    method: 'post',
-    url: 'https://bhcd-api.herokuapp.com/user-line-device-info/check/esp',
-    headers: {
-      'Content-Type' : 'application/json'
-    },
-    data: {
-        "data" : {
-          "esp" : esp
-        }
-    }
-  }).then((response) => {
-    var lineID = response.data.data.id
-    const echo = {
-      "type": "text",
-      "text": "ข้อมูลสุขภาพของคุณ " + response.data.data.name + " ได้รับการบันทึกแล้ว\n" + 
-        "ความดันโลหิต : " + hbp.toString() + "/" + lbp.toString() + "\n" +
-        "อัตรการเต้นของหัวใจ : " + hr.toString()
-    }
-    client.pushMessage(lineID, echo)
-    res.status(200)
-    res.send('Push message completed')
-  }).catch((error) => {
-    console.log(error.message)
-    res.status(400)
-    res.send('Push message error')
-  })
-})
-
 app.post('/health-info-oxi', (req, res) => {
   var esp = req.body.data.esp
   var spo2 = req.body.data.spo2
@@ -323,7 +289,7 @@ app.post('/health-info-oxi', (req, res) => {
     const echo = {
       "type": "text",
       "text": "ข้อมูลสุขภาพของคุณ " + response.data.data.name + " ได้รับการบันทึกแล้ว\n" + 
-        "ค่าประมาณของปริมาณออกซิเจนในเลือด : " + hbp.toString()
+        "ค่าประมาณของปริมาณออกซิเจนในเลือด : " + spo2.toString()
     }
     client.pushMessage(lineID, echo)
     res.status(200)
